@@ -119,10 +119,12 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 .card-disabled {
-  opacity:.4; pointer-events:none; user-select:none;
+  opacity: .4;
+  pointer-events: none;
+  user-select: none;
 }
 .card-disabled .card-head {
-  color:var(--mute);
+  color: var(--mute);
 }
 </style>
 </head>
@@ -331,19 +333,26 @@ function openNormalForm(appId) {
   const useEl = document.querySelector(`input[name="f-use"][value="${app.use?'on':'off'}"]`);
   if (useEl) useEl.checked = true;
 
-  document.getElementById('f-vname').value = '';
-  document.getElementById('f-vcode').value = '';
-  document.getElementById('f-msg').value   = '';
-  document.getElementById('f-note').value  = '';
-  document.getElementById('f-msg-cnt').textContent  = '0/50';
-  document.getElementById('f-note-cnt').textContent = '0/500';
-
-  setHint('f-vname-prev', app.vname !== '-' ? `이전값: ${app.vname}` : '');
-  setHint('f-vcode-prev', app.vcode !== '-' ? `이전값: ${app.vcode}` : '');
-  clearErr('f-vname-err'); clearErr('f-vcode-err');
-  document.getElementById('f-vname').classList.remove('err');
-  document.getElementById('f-vcode').classList.remove('err');
+  fillFormFields('f', app);
   applyUseState('f-use', app.use);
+}
+
+// ── 폼 필드 공통 초기화 (이전값 힌트 포함) ──────────────
+function fillFormFields(pfx, app) {
+  document.getElementById(`${pfx}-vname`).value = '';
+  document.getElementById(`${pfx}-vcode`).value = '';
+  document.getElementById(`${pfx}-msg`).value   = '';
+  document.getElementById(`${pfx}-note`).value  = '';
+  const msgCnt  = document.getElementById(`${pfx}-msg-cnt`);
+  const noteCnt = document.getElementById(`${pfx}-note-cnt`);
+  if (msgCnt)  msgCnt.textContent  = '0/50';
+  if (noteCnt) noteCnt.textContent = '0/500';
+  setHint(`${pfx}-vname-prev`, app.vname && app.vname !== '-' ? `이전값: ${app.vname}` : '');
+  setHint(`${pfx}-vcode-prev`, app.vcode && app.vcode !== '-' ? `이전값: ${app.vcode}` : '');
+  clearErr(`${pfx}-vname-err`);
+  clearErr(`${pfx}-vcode-err`);
+  document.getElementById(`${pfx}-vname`).classList.remove('err');
+  document.getElementById(`${pfx}-vcode`).classList.remove('err');
 }
 
 // ── 유효성 검사 ──────────────────────────────────────
@@ -413,6 +422,8 @@ function doSave() {
   showToast('수정사항이 저장되었습니다.');
 }
 
+// ── 유틸 ──────────────────────────────────────────────
+function cr(k,v){ return `<div class="confirm-row"><span class="confirm-key">${k}</span><span class="confirm-val">${v}</span></div>`; }
 
 // ── 사용여부 변경 시 버전정보 카드 비활성화 ──────────────
 function onUseChange(useName) {
@@ -420,24 +431,17 @@ function onUseChange(useName) {
   applyUseState(useName, checked === 'on');
 }
 function applyUseState(useName, isOn) {
-  // useName 기준으로 해당 폼의 버전정보 카드 찾기
   const radio = document.querySelector(`input[name="${useName}"]`);
   if (!radio) return;
-  // 가장 가까운 panel 내에서 두 번째 card (버전정보)
   const panel = radio.closest('.panel');
   if (!panel) return;
-  const cards = panel.querySelectorAll('.card');
-  // 버전정보 카드: card-head 텍스트에 '버전' 포함
-  cards.forEach(card => {
+  panel.querySelectorAll('.card').forEach(card => {
     const head = card.querySelector('.card-head');
     if (head && head.textContent.includes('버전')) {
       card.classList.toggle('card-disabled', !isOn);
     }
   });
 }
-
-// ── 유틸 ──────────────────────────────────────────────
-function cr(k,v){ return `<div class="confirm-row"><span class="confirm-key">${k}</span><span class="confirm-val">${v}</span></div>`; }
 function setHint(id,t){ document.getElementById(id).textContent=t; }
 function setErr(id,t)  { document.getElementById(id).textContent=t; }
 function clearErr(id)  { document.getElementById(id).textContent=''; }
