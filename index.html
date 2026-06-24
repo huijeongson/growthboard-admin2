@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>성장판 어드민 – 디지털 학습APP 관리</title>
+<title>성장판 어드민 – 디지털 학습APP 관리 (INDEX2)</title>
 <style>
 :root {
   --bg:#f5f6f8; --surface:#fff; --surface2:#f0f2f5;
@@ -88,22 +88,7 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
 .radio-group input[type=radio]{accent-color:var(--blue);width:15px;height:15px;}
 .use-hint{font-size:11.5px;color:var(--mute);margin-top:6px;}
 
-/* ── 스텝 탭 ── */
-.step-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 20px;background:var(--surface);}
-.step-tab{
-  display:flex;align-items:center;gap:7px;
-  padding:10px 18px;font-size:13px;color:var(--mute);
-  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
-  border-radius:0;
-}
-.step-tab:hover{color:var(--text);}
-.step-tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600;}
-.step-tab.done{color:var(--green);}
-.step-tab .tab-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
-.step-tab.active .tab-icon{background:var(--blue);color:#fff;}
-.step-tab.done   .tab-icon{background:var(--green);color:#fff;}
-.step-tab.idle   .tab-icon{background:#e5e7eb;color:var(--mute);}
-.step-tab-body{display:none;}.step-tab-body.on{display:block;}
+
 
 /* ── 버튼 ── */
 .btn-row{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
@@ -262,117 +247,6 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
         </div>
       </div>
 
-      <!-- ══ 수정 화면 (스텝형) ══ -->
-      <div class="panel" id="panel-step">
-        <div class="edit-title">디지털 학습App 관리 <span style="font-size:14px;color:var(--mute);font-weight:400;">(작업중)</span></div>
-
-        <!-- 기본정보 (공통) -->
-        <div class="card">
-          <div class="card-head">기본정보</div>
-          <div class="card-body" id="step-basic-body">
-            <!-- JS로 채움 -->
-          </div>
-        </div>
-
-        <!-- 최신 버전정보 (탭) -->
-        <div class="card" style="padding:0;">
-          <div class="card-head" style="border-bottom:none;padding-bottom:0;">최신 버전정보</div>
-          <div class="step-tabs" id="step-tabs">
-            <div class="step-tab active" id="stab-1" onclick="switchStepTab(1)">
-              <span class="tab-icon active" id="stab-icon-1">1</span>
-              <span id="stab-label-1">1단계</span>
-            </div>
-            <div class="step-tab idle" id="stab-2" onclick="switchStepTab(2)">
-              <span class="tab-icon idle" id="stab-icon-2">2</span>
-              <span id="stab-label-2">2단계</span>
-            </div>
-          </div>
-
-          <!-- 탭 1 본문 -->
-          <div class="step-tab-body on" id="stab-body-1">
-            <div class="card-body">
-              <div class="form-row">
-                <div class="form-label">버전명</div>
-                <div class="form-ctrl">
-                  <input class="form-input narrow" id="s1-vname" placeholder="1.01.01" autocomplete="off">
-                  <div class="form-hint">앱 버전 기입 (versionname, 예시:2.01.20)</div>
-                  <div class="form-hint prev"  id="s1-vname-prev"></div>
-                  <div class="form-hint error" id="s1-vname-err"></div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-label">버전코드</div>
-                <div class="form-ctrl">
-                  <input class="form-input narrow" id="s1-vcode" placeholder="10454120" maxlength="9" autocomplete="off">
-                  <div class="form-hint">숫자 9자리 (versionCode)</div>
-                  <div class="form-hint prev"  id="s1-vcode-prev"></div>
-                  <div class="form-hint error" id="s1-vcode-err"></div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-label">팝업 문구 표출</div>
-                <div class="form-ctrl">
-                  <input class="form-input" id="s1-msg" placeholder="App 업데이트를 실행 하시겠습니까?" maxlength="50">
-                  <div class="form-hint count" id="s1-msg-cnt">0/50</div>
-                  <div class="form-hint">공백 포함 최대 50자, 미입력시 기본 문구 노출</div>
-                </div>
-              </div>
-              <div class="form-row" style="margin-bottom:0;">
-                <div class="form-label">배포내용 메모</div>
-                <div class="form-ctrl">
-                  <textarea class="form-input" id="s1-note" rows="5" placeholder="필수 업데이트" maxlength="500"></textarea>
-                  <div class="form-hint count" id="s1-note-cnt" style="width:100%;">0/500</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 탭 2 본문 -->
-          <div class="step-tab-body" id="stab-body-2">
-            <div class="card-body">
-              <div class="form-row">
-                <div class="form-label">버전명</div>
-                <div class="form-ctrl">
-                  <input class="form-input narrow" id="s2-vname" placeholder="1.01.01" autocomplete="off">
-                  <div class="form-hint">앱 버전 기입 (versionname, 예시:2.01.20)</div>
-                  <div class="form-hint prev"  id="s2-vname-prev"></div>
-                  <div class="form-hint error" id="s2-vname-err"></div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-label">버전코드</div>
-                <div class="form-ctrl">
-                  <input class="form-input narrow" id="s2-vcode" placeholder="10454120" maxlength="9" autocomplete="off">
-                  <div class="form-hint">숫자 9자리 (versionCode)</div>
-                  <div class="form-hint prev"  id="s2-vcode-prev"></div>
-                  <div class="form-hint error" id="s2-vcode-err"></div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-label">팝업 문구 표출</div>
-                <div class="form-ctrl">
-                  <input class="form-input" id="s2-msg" placeholder="App 업데이트를 실행 하시겠습니까?" maxlength="50">
-                  <div class="form-hint count" id="s2-msg-cnt">0/50</div>
-                  <div class="form-hint">공백 포함 최대 50자, 미입력시 기본 문구 노출</div>
-                </div>
-              </div>
-              <div class="form-row" style="margin-bottom:0;">
-                <div class="form-label">배포내용 메모</div>
-                <div class="form-ctrl">
-                  <textarea class="form-input" id="s2-note" rows="5" placeholder="필수 업데이트" maxlength="500"></textarea>
-                  <div class="form-hint count" id="s2-note-cnt" style="width:100%;">0/500</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-ghost"   onclick="goList()">취소</button>
-          <button class="btn btn-primary" onclick="openConfirmStep()">수정</button>
-        </div>
-      </div>
-
     </div>
   </div>
 
@@ -388,34 +262,21 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
     </div>
   </div>
 
-  <!-- 확인 모달 (스텝형) -->
-  <div class="modal-dim" id="modal-confirm-step">
-    <div class="modal">
-      <div class="modal-head"><h3>수정 내용 확인</h3><button class="modal-close" onclick="closeModal('modal-confirm-step')">✕</button></div>
-      <div class="modal-body" id="mcs-body"></div>
-      <div class="modal-foot">
-        <button class="btn btn-secondary" onclick="closeModal('modal-confirm-step')">취소</button>
-        <button class="btn btn-primary"   onclick="doSaveStep()">수정완료</button>
-      </div>
-    </div>
-  </div>
-
   <div class="toast" id="toast"></div>
 </div>
 
 <script>
 // ── 데이터 ──────────────────────────────────────────────
 const APPS = [
-  { id:'001', name:'써밋 스코어수학',    pkg:'com.daekyo.score.math',        use:false, vname:'-',     vcode:'-',         mdate:'-',                editor:'-',    step:false },
-  { id:'003', name:'써밋 스피드수학',    pkg:'com.daekyo.speed.math',        use:true,  vname:'2.5.0', vcode:'002005000', mdate:'2026-05-10 09:15', editor:'최충호', step:false },
-  { id:'005', name:'써밋 스코어국어',    pkg:'com.daekyo.score.korean',      use:true,  vname:'1.8.3', vcode:'001008003', mdate:'2026-05-08 17:40', editor:'손희정', step:false },
-  { id:'006', name:'써밋 어휘력',        pkg:'com.daekyo.vocab',             use:true,  vname:'1.4.0', vcode:'001004000', mdate:'2026-05-12 11:05', editor:'손희정', step:false },
-  {
-    id:'009+010', name:'써밋 스텝국어 / 써밋 스텝영어', step:true,
-    app1:{ id:'009', name:'써밋 스텝국어', pkg:'com.daekyo.digistep.kr',  use:true,  vname:'1.1.2', vcode:'001001002', mdate:'2026-05-11 10:30', editor:'손희정' },
-    app2:{ id:'010', name:'써밋 스텝영어', pkg:'com.daekyo.digistep.en',  use:false, vname:'1.2.1', vcode:'001002001', mdate:'2026-05-09 13:20', editor:'손희정' },
-  },
-  { id:'011', name:'써밋 스텝영어 중등', pkg:'com.knowre.android.hexagon.pro', use:true, vname:'2.0.0', vcode:'002000000', mdate:'2026-05-14 07:45', editor:'장수호', step:false },
+  { id:'001', name:'써밋 스코어수학',    pkg:'com.daekyo.score.math',        use:false, vname:'-',     vcode:'-',         mdate:'-',                editor:'-'    },
+  { id:'003', name:'써밋 스피드수학',    pkg:'com.daekyo.speed.math',        use:true,  vname:'2.5.0', vcode:'002005000', mdate:'2026-05-10 09:15', editor:'최충호' },
+  { id:'005', name:'써밋 스코어국어',    pkg:'com.daekyo.score.korean',      use:true,  vname:'1.8.3', vcode:'001008003', mdate:'2026-05-08 17:40', editor:'손희정' },
+  { id:'006', name:'써밋 어휘력',        pkg:'com.daekyo.vocab',             use:true,  vname:'1.4.0', vcode:'001004000', mdate:'2026-05-12 11:05', editor:'손희정' },
+  { id:'009', name:'써밋 스텝국어 1단계', pkg:'com.daekyo.digistep.kr',       use:true,  vname:'1.1.2', vcode:'001001002', mdate:'2026-05-11 10:30', editor:'손희정' },
+  { id:'009', name:'써밋 스텝국어 2단계', pkg:'com.daekyo.digistep.kr',       use:true,  vname:'1.1.2', vcode:'001001002', mdate:'2026-05-11 10:30', editor:'손희정' },
+  { id:'010', name:'써밋 스텝영어 1단계', pkg:'com.daekyo.digistep.en',       use:false, vname:'1.2.1', vcode:'001002001', mdate:'2026-05-09 13:20', editor:'손희정' },
+  { id:'010', name:'써밋 스텝영어 2단계', pkg:'com.daekyo.digistep.en',       use:false, vname:'1.2.1', vcode:'001002001', mdate:'2026-05-09 13:20', editor:'손희정' },
+  { id:'011', name:'써밋 스텝영어 중등', pkg:'com.knowre.android.hexagon.pro', use:true, vname:'2.0.0', vcode:'002000000', mdate:'2026-05-14 07:45', editor:'장수호' },
 ];
 
 let currentApp = null;
@@ -425,35 +286,21 @@ function renderList() {
   const tb = document.getElementById('list-tbody');
   tb.innerHTML = '';
   APPS.forEach(app => {
-    if (app.step) {
-      [app.app1, app.app2].forEach(a => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${a.id}</td>
-          <td><span class="name-link" onclick="openStepForm('${app.id}')">${a.name}</span></td>
-          <td><span class="badge ${a.use?'on':'off'}">${a.use?'사용':'미사용'}</span></td>
-          <td style="color:var(--mute);font-size:12.5px;">${a.editor}</td>
-          <td style="color:var(--mute);font-size:12px;">${a.mdate}</td>
-        `;
-        tb.appendChild(tr);
-      });
-    } else {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${app.id}</td>
-        <td><span class="name-link" onclick="openNormalForm('${app.id}')">${app.name}</span></td>
-        <td><span class="badge ${app.use?'on':'off'}">${app.use?'사용':'미사용'}</span></td>
-        <td style="color:var(--mute);font-size:12.5px;">${app.editor}</td>
-        <td style="color:var(--mute);font-size:12px;">${app.mdate}</td>
-      `;
-      tb.appendChild(tr);
-    }
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${app.id}</td>
+      <td><span class="name-link" onclick="openNormalForm('${app.id}')">${app.name}</span></td>
+      <td><span class="badge ${app.use?'on':'off'}">${app.use?'사용':'미사용'}</span></td>
+      <td style="color:var(--mute);font-size:12.5px;">${app.editor}</td>
+      <td style="color:var(--mute);font-size:12px;">${app.mdate}</td>
+    `;
+    tb.appendChild(tr);
   });
 }
 
 // ── 패널 전환 ──────────────────────────────────────────
 function showPanel(id) {
-  ['panel-list','panel-normal','panel-step'].forEach(p =>
+  ['panel-list','panel-normal'].forEach(p =>
     document.getElementById(p).classList.toggle('on', p === id)
   );
   document.getElementById('main').scrollTop = 0;
@@ -497,80 +344,6 @@ function openNormalForm(appId) {
   document.getElementById('f-vname').classList.remove('err');
   document.getElementById('f-vcode').classList.remove('err');
   applyUseState('f-use', app.use);
-}
-
-// ── 스텝형 수정 폼 ──────────────────────────────────────
-function openStepForm(appId) {
-  const app = APPS.find(a => a.id === appId);
-  currentApp = app;
-  showPanel('panel-step');
-  setBC([{label:'디지털 학습APP 관리', fn:'goList()'}, {label:'수정', active:true}]);
-
-  // 기본정보 영역 (1단계 앱 기준)
-  document.getElementById('step-basic-body').innerHTML = `
-    <div class="form-row">
-      <div class="form-label">학습 APP</div>
-      <div class="form-ctrl"><input class="form-input" value="${app.app1.name} (systemId: ${app.app1.id})" readonly></div>
-    </div>
-    <div class="form-row" style="margin-bottom:0;">
-      <div class="form-label">사용여부</div>
-      <div class="form-ctrl">
-        <div class="radio-group">
-          <label><input type="radio" name="s-use" value="on" onchange="onUseChange('s-use')" ${app.app1.use?'checked':''}> 사용</label>
-          <label><input type="radio" name="s-use" value="off" onchange="onUseChange('s-use')" ${!app.app1.use?'checked':''}> 미사용</label>
-        </div>
-        <div class="use-hint">미사용 시 학습 APP에 업데이트 정책이 전달되지 않습니다</div>
-      </div>
-    </div>
-  `;
-
-  // 탭 라벨
-  document.getElementById('stab-label-1').textContent = '1단계';
-  document.getElementById('stab-label-2').textContent = '2단계';
-
-  // 탭 초기 상태
-  switchStepTab(1);
-
-  // 1단계 폼 채우기
-  document.getElementById('s1-vname').value = '';
-  document.getElementById('s1-vcode').value = '';
-  document.getElementById('s1-msg').value   = '';
-  document.getElementById('s1-note').value  = '';
-  document.getElementById('s1-msg-cnt').textContent  = '0/50';
-  document.getElementById('s1-note-cnt').textContent = '0/500';
-  setHint('s1-vname-prev', app.app1.vname !== '-' ? `이전값: ${app.app1.vname}` : '');
-  setHint('s1-vcode-prev', app.app1.vcode !== '-' ? `이전값: ${app.app1.vcode}` : '');
-  clearErr('s1-vname-err'); clearErr('s1-vcode-err');
-  document.getElementById('s1-vname').classList.remove('err');
-  document.getElementById('s1-vcode').classList.remove('err');
-
-  // 2단계 폼 채우기
-  document.getElementById('s2-vname').value = '';
-  document.getElementById('s2-vcode').value = '';
-  document.getElementById('s2-msg').value   = '';
-  document.getElementById('s2-note').value  = '';
-  document.getElementById('s2-msg-cnt').textContent  = '0/50';
-  document.getElementById('s2-note-cnt').textContent = '0/500';
-  setHint('s2-vname-prev', app.app2.vname !== '-' ? `이전값: ${app.app2.vname}` : '');
-  setHint('s2-vcode-prev', app.app2.vcode !== '-' ? `이전값: ${app.app2.vcode}` : '');
-  clearErr('s2-vname-err'); clearErr('s2-vcode-err');
-  document.getElementById('s2-vname').classList.remove('err');
-  document.getElementById('s2-vcode').classList.remove('err');
-  // 사용여부 초기 상태 적용 (innerHTML 렌더 후)
-  setTimeout(() => applyUseState('s-use', app.app1.use), 0);
-}
-
-// ── 스텝 탭 전환 ──────────────────────────────────────
-function switchStepTab(n) {
-  [1, 2].forEach(i => {
-    const tab  = document.getElementById(`stab-${i}`);
-    const body = document.getElementById(`stab-body-${i}`);
-    const icon = document.getElementById(`stab-icon-${i}`);
-    const isActive = i === n;
-    tab.className  = `step-tab ${isActive ? 'active' : 'idle'}`;
-    icon.className = `tab-icon ${isActive ? 'active' : 'idle'}`;
-    body.classList.toggle('on', isActive);
-  });
 }
 
 // ── 유효성 검사 ──────────────────────────────────────
@@ -640,52 +413,6 @@ function doSave() {
   showToast('수정사항이 저장되었습니다.');
 }
 
-// ── 확인 모달 (스텝형) ──────────────────────────────────
-function openConfirmStep() {
-  const ok1 = validate('s1', currentApp.app1);
-  const ok2 = validate('s2', currentApp.app2);
-  if (!ok1) { switchStepTab(1); return; }
-  if (!ok2) { switchStepTab(2); return; }
-  // 현재 활성 탭 앱만 표시
-  const activeTab = document.getElementById('stab-body-1').classList.contains('on') ? 1 : 2;
-  const pfx  = activeTab === 1 ? 's1' : 's2';
-  const app  = activeTab === 1 ? currentApp.app1 : currentApp.app2;
-  document.getElementById('mcs-body').innerHTML = buildStepRows(pfx);
-  document.getElementById('modal-confirm-step').classList.add('on');
-}
-
-function buildStepRows(pfx) {
-  const use  = document.querySelector(`input[name="s-use"]:checked`)?.value;
-  const vn   = document.getElementById(`${pfx}-vname`).value.trim() || '-';
-  const vc   = document.getElementById(`${pfx}-vcode`).value.trim() || '-';
-  const msg  = document.getElementById(`${pfx}-msg`).value.trim();
-  const note = document.getElementById(`${pfx}-note`).value.trim();
-  let r = '';
-  if(use)  r += cr('사용여부', use==='on'?'사용':'미사용');
-  r += cr('버전명', vn) + cr('버전코드', vc);
-  if(msg)  r += cr('팝업 문구 표출', msg);
-  if(note) r += cr('배포내용 메모', note);
-  return r;
-}
-
-function doSaveStep() {
-  const use  = document.querySelector('input[name="s-use"]:checked')?.value;
-  const now  = new Date().toISOString().slice(0,16).replace('T',' ');
-  const save = (pfx, appObj) => {
-    const vn = document.getElementById(`${pfx}-vname`).value.trim();
-    const vc = document.getElementById(`${pfx}-vcode`).value.trim();
-    if(use) appObj.use = use==='on';
-    if(vn)  appObj.vname = vn;
-    if(vc)  appObj.vcode = vc;
-    appObj.mdate  = now;
-    appObj.editor = '손희정';
-  };
-  save('s1', currentApp.app1);
-  save('s2', currentApp.app2);
-  closeModal('modal-confirm-step'); renderList(); goList();
-  showToast('두 앱 모두 저장되었습니다.');
-}
-
 
 // ── 사용여부 변경 시 버전정보 카드 비활성화 ──────────────
 function onUseChange(useName) {
@@ -722,10 +449,7 @@ function showToast(msg){
 }
 
 // ── 카운터 ──────────────────────────────────────────────
-[['f-msg','f-msg-cnt',50],['f-note','f-note-cnt',500],
- ['s1-msg','s1-msg-cnt',50],['s1-note','s1-note-cnt',500],
- ['s2-msg','s2-msg-cnt',50],['s2-note','s2-note-cnt',500]
-].forEach(([id, cntId, max]) => {
+[['f-msg','f-msg-cnt',50],['f-note','f-note-cnt',500]].forEach(([id, cntId, max]) => {
   document.getElementById(id).addEventListener('input', e => {
     document.getElementById(cntId).textContent = `${e.target.value.length}/${max}`;
   });
