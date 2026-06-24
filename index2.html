@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>성장판 어드민 – 디지털 학습APP 관리 (INDEX2)</title>
+<style>
+:root {
+  --bg:#f5f6f8; --surface:#fff; --surface2:#f0f2f5;
+  --border:#e0e3e8; --border2:#c8cdd6;
+  --text:#1a1d22; --mute:#6b7280; --mute2:#9ca3af;
+  --blue:#2563eb; --blue-bg:#eff6ff; --blue-light:#dbeafe;
+  --green:#16a34a; --green-bg:#f0fdf4;
+  --red:#dc2626;
+  --amber:#d97706;
+  --sidebar-bg:#1e2330; --sidebar-text:#c9d1e0; --sidebar-active:#fff;
+  --sidebar-w:220px;
+  --radius:8px;
+}
+*{margin:0;box-sizing:border-box;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;}
+body{background:#0d1117;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.frame{width:1280px;height:860px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.6);position:relative;background:var(--bg);}
+
+/* 상단 헤더 */
+.top-bar{height:48px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:6px;flex-shrink:0;}
+.bc{font-size:12.5px;color:var(--mute);cursor:pointer;}
+.bc:hover{color:var(--blue);}
+.bc.cur{color:var(--text);font-weight:600;cursor:default;}
+.bc-sep{color:var(--mute2);font-size:12px;}
+
+/* 레이아웃 */
+.layout{display:flex;flex:1;overflow:hidden;}
+
+/* 사이드바 */
+.sidebar{width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;padding:0;flex-shrink:0;overflow-y:auto;}
+.sidebar-logo{padding:16px 18px;font-size:13px;font-weight:700;color:#fff;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px;}
+.menu-section{font-size:10px;color:rgba(255,255,255,.3);padding:12px 18px 3px;text-transform:uppercase;letter-spacing:.08em;}
+.menu-item{padding:8px 18px;font-size:13px;color:var(--sidebar-text);cursor:pointer;border-left:2px solid transparent;}
+.menu-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+.menu-item.active{background:rgba(255,255,255,.1);color:var(--sidebar-active);font-weight:600;border-left-color:#4f8ef7;}
+
+/* 메인 */
+.main{flex:1;overflow-y:auto;padding:28px 32px;}
+
+/* 패널 */
+.panel{display:none;}.panel.on{display:block;}
+
+/* ── 목록 ── */
+.page-header{margin-bottom:6px;}
+.page-title{font-size:20px;font-weight:700;color:var(--text);}
+.page-notice{font-size:12px;color:var(--mute);margin-bottom:18px;margin-top:4px;}
+
+.tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:var(--surface2);}
+th{padding:10px 16px;text-align:left;color:var(--mute);font-weight:600;font-size:12px;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:11px 16px;color:var(--text);border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:#f8f9fc;cursor:pointer;}
+.name-link{color:var(--blue);cursor:pointer;font-weight:500;}
+.name-link:hover{text-decoration:underline;}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;}
+.badge.on {background:var(--green-bg);color:var(--green);}
+.badge.off{background:#f3f4f6;color:var(--mute);}
+
+/* ── 수정 화면 공통 ── */
+.edit-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;}
+.card-head{padding:14px 20px;border-bottom:1px solid var(--border);font-size:14px;font-weight:700;color:var(--text);}
+.card-body{padding:24px 28px;}
+
+.form-row{display:flex;align-items:flex-start;gap:0;margin-bottom:20px;}
+.form-row:last-child{margin-bottom:0;}
+.form-label{width:120px;flex-shrink:0;font-size:13px;color:var(--mute);padding-top:9px;font-weight:500;}
+.form-ctrl{flex:1;}
+.form-input{width:100%;background:#fff;border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--text);outline:none;transition:border-color .15s;}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-light);}
+.form-input.err{border-color:var(--red);}
+.form-input[readonly]{background:var(--surface2);color:var(--mute);cursor:default;}
+.narrow{width:300px;}
+.form-hint{font-size:11.5px;color:var(--mute2);margin-top:5px;}
+.form-hint.prev{color:var(--amber);}
+.form-hint.error{color:var(--red);}
+.form-hint.count{text-align:right;width:460px;}
+.radio-group{display:flex;gap:24px;padding-top:8px;}
+.radio-group label{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text);cursor:pointer;}
+.radio-group input[type=radio]{accent-color:var(--blue);width:15px;height:15px;}
+.use-hint{font-size:11.5px;color:var(--mute);margin-top:6px;}
+
+
+
+/* ── 버튼 ── */
+.btn-row{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+.btn{padding:9px 22px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .15s;}
+.btn:hover{opacity:.85;}
+.btn-primary  {background:var(--blue);color:#fff;border-color:var(--blue);}
+.btn-secondary{background:#fff;color:var(--text);border-color:var(--border2);}
+.btn-ghost    {background:transparent;color:var(--mute);border-color:var(--border);}
+
+/* ── 모달 ── */
+.modal-dim{position:absolute;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100;}
+.modal-dim.on{display:flex;}
+.modal{background:#fff;border:1px solid var(--border);border-radius:10px;width:480px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-head h3{font-size:15px;font-weight:700;color:var(--text);}
+.modal-close{background:none;border:none;color:var(--mute);font-size:18px;cursor:pointer;line-height:1;}
+.modal-body{padding:20px;}
+.modal-section-title{font-size:11px;color:var(--mute);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px;}
+.modal-section-title:first-child{margin-top:0;}
+.confirm-row{display:flex;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.confirm-row:last-child{border-bottom:none;}
+.confirm-key{width:100px;color:var(--mute);flex-shrink:0;}
+.confirm-val{color:var(--text);font-weight:500;}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
+
+/* ── 토스트 ── */
+.toast{position:absolute;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:#1d4ed8;color:#fff;font-size:13px;font-weight:600;padding:10px 22px;border-radius:6px;opacity:0;pointer-events:none;transition:all .3s;z-index:200;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <!-- 상단 브레드크럼 -->
+  <div class="top-bar" id="top-bar">
+    <span class="bc cur">디지털 학습APP 관리</span>
+  </div>
+
+  <div class="layout">
+    <!-- 사이드바 -->
+    <nav class="sidebar">
+      <div class="sidebar-logo">성장판 어드민</div>
+      <div class="menu-section">전시관리</div>
+      <div class="menu-item">배너관리</div>
+      <div class="menu-item">공지사항관리</div>
+      <div class="menu-item">팝업관리</div>
+      <div class="menu-item">슬라이드 메뉴관리</div>
+      <div class="menu-item">메세지관리</div>
+      <div class="menu-item">App 버전 관리 (성장판)</div>
+      <div class="menu-section">학습앱 관리</div>
+      <div class="menu-item active">디지털 학습APP 관리</div>
+      <div class="menu-section">코드관리</div>
+      <div class="menu-item">학습관리</div>
+      <div class="menu-item">코드관리</div>
+    </nav>
+
+    <div class="main" id="main">
+
+      <!-- ══ 목록 ══ -->
+      <div class="panel on" id="panel-list">
+        <div class="page-header">
+          <div class="page-title">디지털 학습APP 관리</div>
+          <div class="page-notice">본 화면은 최소 강제 업데이트 버전만 관리합니다.</div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:70px">systemId</th>
+                <th>상품명</th>
+                <th style="width:90px">사용여부</th>
+                <th style="width:120px">최종 수정자</th>
+                <th style="width:160px">최근 수정일</th>
+              </tr>
+            </thead>
+            <tbody id="list-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ 수정 화면 (일반형) ══ -->
+      <div class="panel" id="panel-normal">
+        <div class="edit-title">디지털 학습App 관리 <span style="font-size:14px;color:var(--mute);font-weight:400;">(작업중)</span></div>
+
+        <!-- 기본정보 -->
+        <div class="card">
+          <div class="card-head">기본정보</div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-label">학습 APP</div>
+              <div class="form-ctrl"><input class="form-input" id="f-app" readonly></div>
+            </div>
+            <div class="form-row" style="margin-bottom:0;">
+              <div class="form-label">사용여부</div>
+              <div class="form-ctrl">
+                <div class="radio-group">
+                  <label><input type="radio" name="f-use" value="on"> 사용</label>
+                  <label><input type="radio" name="f-use" value="off"> 미사용</label>
+                </div>
+                <div class="use-hint">미사용 시 학습 APP에 업데이트 정책이 전달되지 않습니다</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 최신 버전정보 -->
+        <div class="card">
+          <div class="card-head">최신 버전정보</div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-label">버전명</div>
+              <div class="form-ctrl">
+                <input class="form-input narrow" id="f-vname" placeholder="1.01.01" autocomplete="off">
+                <div class="form-hint">앱 버전 기입 (versionname, 예시:2.01.20)</div>
+                <div class="form-hint prev"  id="f-vname-prev"></div>
+                <div class="form-hint error" id="f-vname-err"></div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">버전코드</div>
+              <div class="form-ctrl">
+                <input class="form-input narrow" id="f-vcode" placeholder="10454120" maxlength="9" autocomplete="off">
+                <div class="form-hint">숫자 9자리 (versionCode)</div>
+                <div class="form-hint prev"  id="f-vcode-prev"></div>
+                <div class="form-hint error" id="f-vcode-err"></div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">팝업 문구 표출</div>
+              <div class="form-ctrl">
+                <input class="form-input" id="f-msg" placeholder="App 업데이트를 실행 하시겠습니까?" maxlength="50">
+                <div class="form-hint count" id="f-msg-cnt">0/50</div>
+                <div class="form-hint">공백 포함 최대 50자, 미입력시 기본 문구 노출</div>
+              </div>
+            </div>
+            <div class="form-row" style="margin-bottom:0;">
+              <div class="form-label">배포내용 메모</div>
+              <div class="form-ctrl">
+                <textarea class="form-input" id="f-note" rows="5" placeholder="필수 업데이트" maxlength="500"></textarea>
+                <div class="form-hint count" id="f-note-cnt" style="width:100%;">0/500</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="goList()">취소</button>
+          <button class="btn btn-primary" onclick="openConfirm()">수정</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 확인 모달 (일반형) -->
+  <div class="modal-dim" id="modal-confirm">
+    <div class="modal">
+      <div class="modal-head"><h3>수정 내용 확인</h3><button class="modal-close" onclick="closeModal('modal-confirm')">✕</button></div>
+      <div class="modal-body" id="mc-body"></div>
+      <div class="modal-foot">
+        <button class="btn btn-secondary" onclick="closeModal('modal-confirm')">취소</button>
+        <button class="btn btn-primary"   onclick="doSave()">수정완료</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ── 데이터 ──────────────────────────────────────────────
+const APPS = [
+  { id:'001', name:'써밋 스코어수학',    pkg:'com.daekyo.score.math',        use:false, vname:'-',     vcode:'-',         mdate:'-',                editor:'-'    },
+  { id:'003', name:'써밋 스피드수학',    pkg:'com.daekyo.speed.math',        use:true,  vname:'2.5.0', vcode:'002005000', mdate:'2026-05-10 09:15', editor:'최충호' },
+  { id:'005', name:'써밋 스코어국어',    pkg:'com.daekyo.score.korean',      use:true,  vname:'1.8.3', vcode:'001008003', mdate:'2026-05-08 17:40', editor:'손희정' },
+  { id:'006', name:'써밋 어휘력',        pkg:'com.daekyo.vocab',             use:true,  vname:'1.4.0', vcode:'001004000', mdate:'2026-05-12 11:05', editor:'손희정' },
+  { id:'009', name:'써밋 스텝국어 1단계', pkg:'com.daekyo.digistep.kr',       use:true,  vname:'1.1.2', vcode:'001001002', mdate:'2026-05-11 10:30', editor:'손희정' },
+  { id:'009', name:'써밋 스텝국어 2단계', pkg:'com.daekyo.digistep.kr',       use:true,  vname:'1.1.2', vcode:'001001002', mdate:'2026-05-11 10:30', editor:'손희정' },
+  { id:'010', name:'써밋 스텝영어 1단계', pkg:'com.daekyo.digistep.en',       use:false, vname:'1.2.1', vcode:'001002001', mdate:'2026-05-09 13:20', editor:'손희정' },
+  { id:'010', name:'써밋 스텝영어 2단계', pkg:'com.daekyo.digistep.en',       use:false, vname:'1.2.1', vcode:'001002001', mdate:'2026-05-09 13:20', editor:'손희정' },
+  { id:'011', name:'써밋 스텝영어 중등', pkg:'com.knowre.android.hexagon.pro', use:true, vname:'2.0.0', vcode:'002000000', mdate:'2026-05-14 07:45', editor:'장수호' },
+];
+
+let currentApp = null;
+
+// ── 목록 렌더 ──────────────────────────────────────────
+function renderList() {
+  const tb = document.getElementById('list-tbody');
+  tb.innerHTML = '';
+  APPS.forEach(app => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${app.id}</td>
+      <td><span class="name-link" onclick="openNormalForm('${app.id}')">${app.name}</span></td>
+      <td><span class="badge ${app.use?'on':'off'}">${app.use?'사용':'미사용'}</span></td>
+      <td style="color:var(--mute);font-size:12.5px;">${app.editor}</td>
+      <td style="color:var(--mute);font-size:12px;">${app.mdate}</td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+// ── 패널 전환 ──────────────────────────────────────────
+function showPanel(id) {
+  ['panel-list','panel-normal'].forEach(p =>
+    document.getElementById(p).classList.toggle('on', p === id)
+  );
+  document.getElementById('main').scrollTop = 0;
+}
+
+function goList() {
+  showPanel('panel-list');
+  renderList();
+  setBC([{label:'디지털 학습APP 관리', active:true}]);
+}
+
+function setBC(items) {
+  document.getElementById('top-bar').innerHTML = items.map((it,i) =>
+    it.active
+      ? `<span class="bc cur">${it.label}</span>`
+      : `<span class="bc" onclick="goList()">${it.label}</span><span class="bc-sep"> › </span>`
+  ).join('');
+}
+
+// ── 일반형 수정 폼 ──────────────────────────────────────
+function openNormalForm(appId) {
+  const app = APPS.find(a => a.id === appId);
+  currentApp = app;
+  showPanel('panel-normal');
+  setBC([{label:'디지털 학습APP 관리', fn:'goList()'}, {label:'수정', active:true}]);
+
+  document.getElementById('f-app').value = `${app.name} (systemId: ${app.id})`;
+  const useEl = document.querySelector(`input[name="f-use"][value="${app.use?'on':'off'}"]`);
+  if (useEl) useEl.checked = true;
+
+  document.getElementById('f-vname').value = '';
+  document.getElementById('f-vcode').value = '';
+  document.getElementById('f-msg').value   = '';
+  document.getElementById('f-note').value  = '';
+  document.getElementById('f-msg-cnt').textContent  = '0/50';
+  document.getElementById('f-note-cnt').textContent = '0/500';
+
+  setHint('f-vname-prev', app.vname !== '-' ? `이전값: ${app.vname}` : '');
+  setHint('f-vcode-prev', app.vcode !== '-' ? `이전값: ${app.vcode}` : '');
+  clearErr('f-vname-err'); clearErr('f-vcode-err');
+  document.getElementById('f-vname').classList.remove('err');
+  document.getElementById('f-vcode').classList.remove('err');
+}
+
+// ── 유효성 검사 ──────────────────────────────────────
+function parseVer(v){ return v&&v!=='-'?v.split('.').map(Number):null; }
+function verGT(nv, ov){
+  if(!ov||ov==='-') return true;
+  const n=parseVer(nv), o=parseVer(ov);
+  if(!n) return true;
+  for(let i=0;i<Math.max(n.length,o.length);i++){
+    const ni=n[i]||0, oi=o[i]||0;
+    if(ni>oi) return true; if(ni<oi) return false;
+  }
+  return false;
+}
+function codeGT(nc, oc){ return (!oc||oc==='-') ? true : parseInt(nc,10)>parseInt(oc,10); }
+
+function validate(pfx, app) {
+  const vn = document.getElementById(`${pfx}-vname`).value.trim();
+  const vc = document.getElementById(`${pfx}-vcode`).value.trim();
+  clearErr(`${pfx}-vname-err`); clearErr(`${pfx}-vcode-err`);
+  document.getElementById(`${pfx}-vname`).classList.remove('err');
+  document.getElementById(`${pfx}-vcode`).classList.remove('err');
+  let ok = true;
+  if (vc && !/^\d{9}$/.test(vc)) {
+    setErr(`${pfx}-vcode-err`, '버전코드는 숫자 9자리여야 합니다.');
+    document.getElementById(`${pfx}-vcode`).classList.add('err'); ok = false;
+  }
+  if (vc && /^\d{9}$/.test(vc) && app.vcode!=='-' && !codeGT(vc, app.vcode)) {
+    setErr(`${pfx}-vcode-err`, `이전값(${app.vcode})보다 큰 값을 입력해 주세요.`);
+    document.getElementById(`${pfx}-vcode`).classList.add('err'); ok = false;
+  }
+  return ok;
+}
+
+// ── 확인 모달 (일반형) ──────────────────────────────────
+function openConfirm() {
+  if (!validate('f', currentApp)) return;
+  const use   = document.querySelector('input[name="f-use"]:checked')?.value;
+  const vn    = document.getElementById('f-vname').value.trim() || '-';
+  const vc    = document.getElementById('f-vcode').value.trim() || '-';
+  const msg   = document.getElementById('f-msg').value.trim();
+  const note  = document.getElementById('f-note').value.trim();
+  let r = '';
+  if(use) r += cr('사용여부', use==='on'?'사용':'미사용');
+  r += cr('버전명', vn) + cr('버전코드', vc);
+  if(msg)  r += cr('팝업 문구 표출', msg);
+  if(note) r += cr('배포내용 메모', note);
+  document.getElementById('mc-body').innerHTML = r;
+  document.getElementById('modal-confirm').classList.add('on');
+}
+
+function doSave() {
+  const use  = document.querySelector('input[name="f-use"]:checked')?.value;
+  const vn   = document.getElementById('f-vname').value.trim();
+  const vc   = document.getElementById('f-vcode').value.trim();
+  const app  = currentApp;
+  if(use) app.use = use==='on';
+  if(vn)  app.vname = vn;
+  if(vc)  app.vcode = vc;
+  app.mdate  = new Date().toISOString().slice(0,16).replace('T',' ');
+  app.editor = '손희정';
+  closeModal('modal-confirm'); renderList(); goList();
+  showToast('수정사항이 저장되었습니다.');
+}
+
+// ── 유틸 ──────────────────────────────────────────────
+function cr(k,v){ return `<div class="confirm-row"><span class="confirm-key">${k}</span><span class="confirm-val">${v}</span></div>`; }
+function setHint(id,t){ document.getElementById(id).textContent=t; }
+function setErr(id,t)  { document.getElementById(id).textContent=t; }
+function clearErr(id)  { document.getElementById(id).textContent=''; }
+function closeModal(id){ document.getElementById(id).classList.remove('on'); }
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── 카운터 ──────────────────────────────────────────────
+[['f-msg','f-msg-cnt',50],['f-note','f-note-cnt',500]].forEach(([id, cntId, max]) => {
+  document.getElementById(id).addEventListener('input', e => {
+    document.getElementById(cntId).textContent = `${e.target.value.length}/${max}`;
+  });
+});
+
+renderList();
+</script>
+</body>
+</html>
