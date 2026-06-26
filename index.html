@@ -120,8 +120,7 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
 .modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
 
 /* ── 토스트 ── */
-.toast{position:absolute;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:#1d4ed8;color:#fff;font-size:13px;font-weight:600;padding:10px 22px;border-radius:6px;opacity:0;pointer-events:none;transition:all .3s;z-index:200;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
 </style>
 </head>
 <body>
@@ -263,7 +262,19 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <!-- 알럿 모달 -->
+  <div class="modal-dim" id="modal-alert">
+    <div class="modal" style="width:360px;">
+      <div class="modal-body" style="padding:32px 24px 20px;text-align:center;">
+        <div style="font-size:28px;color:var(--green);margin-bottom:12px;">✓</div>
+        <div id="alert-msg" style="font-size:15px;font-weight:600;color:var(--text);"></div>
+      </div>
+      <div class="modal-foot" style="justify-content:center;border-top:1px solid var(--border);padding:16px 24px;">
+        <button class="btn btn-primary" style="min-width:80px;" onclick="closeModal('modal-alert')">확인</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -413,7 +424,7 @@ function doSave() {
   app.mdate  = new Date().toISOString().slice(0,16).replace('T',' ');
   app.editor = '손희정';
   closeModal('modal-confirm'); renderList(); goList();
-  showToast('수정사항이 저장되었습니다.');
+  showAlert('수정사항이 저장되었습니다.');
 }
 
 
@@ -457,10 +468,9 @@ function setHint(id,t){ document.getElementById(id).textContent=t; }
 function setErr(id,t)  { document.getElementById(id).textContent=t; }
 function clearErr(id)  { document.getElementById(id).textContent=''; }
 function closeModal(id){ document.getElementById(id).classList.remove('on'); }
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
+function showAlert(msg) {
+  document.getElementById('alert-msg').textContent = msg;
+  document.getElementById('modal-alert').classList.add('on');
 }
 
 // ── 카운터 ──────────────────────────────────────────────
