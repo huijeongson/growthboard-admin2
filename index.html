@@ -108,24 +108,20 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
 .modal-body{padding:20px;}
 .modal-section-title{font-size:11px;color:var(--mute);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px;}
 .modal-section-title:first-child{margin-top:0;}
-.confirm-row{display:flex;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.confirm-row{display:flex;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px;align-items:flex-start;}
 .confirm-row:last-child{border-bottom:none;}
-.confirm-key{width:100px;color:var(--mute);flex-shrink:0;}
-.confirm-val{color:var(--text);font-weight:500;}
+.confirm-key{width:110px;color:var(--mute);flex-shrink:0;padding-top:4px;font-size:12px;font-weight:500;}
+.confirm-val{flex:1;}
+.confirm-change{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.confirm-prev{color:var(--mute);background:#f3f4f6;padding:3px 9px;border-radius:4px;font-size:12.5px;text-decoration:line-through;}
+.confirm-arrow{color:var(--mute2);font-size:14px;flex-shrink:0;}
+.confirm-next{color:var(--blue);font-weight:700;font-size:13px;background:var(--blue-bg);padding:3px 9px;border-radius:4px;}
+.confirm-single{color:var(--text);font-weight:500;font-size:13px;}
 .modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
 
 /* ── 토스트 ── */
 .toast{position:absolute;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:#1d4ed8;color:#fff;font-size:13px;font-weight:600;padding:10px 22px;border-radius:6px;opacity:0;pointer-events:none;transition:all .3s;z-index:200;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-.card-disabled {
-  opacity: .4;
-  pointer-events: none;
-  user-select: none;
-}
-.card-disabled .card-head {
-  color: var(--mute);
-}
 </style>
 </head>
 <body>
@@ -169,6 +165,8 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
                 <th style="width:70px">systemId</th>
                 <th>상품명</th>
                 <th style="width:90px">사용여부</th>
+                <th style="width:100px">버전명</th>
+                <th style="width:120px">버전코드</th>
                 <th style="width:120px">최종 수정자</th>
                 <th style="width:160px">최근 수정일</th>
               </tr>
@@ -194,8 +192,8 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
               <div class="form-label">사용여부</div>
               <div class="form-ctrl">
                 <div class="radio-group">
-                  <label><input type="radio" name="f-use" value="on" onchange="onUseChange('f-use')"> 사용</label>
-                  <label><input type="radio" name="f-use" value="off" onchange="onUseChange('f-use')"> 미사용</label>
+                  <label><input type="radio" name="f-use" value="on" onchange="toggleVerCard()"> 사용</label>
+                  <label><input type="radio" name="f-use" value="off" onchange="toggleVerCard()"> 미사용</label>
                 </div>
                 <div class="use-hint">미사용 시 학습 APP에 업데이트 정책이 전달되지 않습니다</div>
               </div>
@@ -204,13 +202,13 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
         </div>
 
         <!-- 최신 버전정보 -->
-        <div class="card">
+        <div class="card" id="ver-card">
           <div class="card-head">최신 버전정보</div>
           <div class="card-body">
             <div class="form-row">
               <div class="form-label">버전명</div>
               <div class="form-ctrl">
-                <input class="form-input narrow" id="f-vname" placeholder="1.01.01" autocomplete="off">
+                <input class="form-input narrow" id="f-vname" placeholder="1.01.01" autocomplete="off" oninput="filterVersionName(this)">
                 <div class="form-hint">앱 버전 기입 (versionname, 예시:2.01.20)</div>
                 <div class="form-hint prev"  id="f-vname-prev"></div>
                 <div class="form-hint error" id="f-vname-err"></div>
@@ -219,7 +217,7 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
             <div class="form-row">
               <div class="form-label">버전코드</div>
               <div class="form-ctrl">
-                <input class="form-input narrow" id="f-vcode" placeholder="10454120" maxlength="9" autocomplete="off">
+                <input class="form-input narrow" id="f-vcode" placeholder="10454120" maxlength="9" autocomplete="off" oninput="filterVersionCode(this)">
                 <div class="form-hint">숫자 9자리 (versionCode)</div>
                 <div class="form-hint prev"  id="f-vcode-prev"></div>
                 <div class="form-hint error" id="f-vcode-err"></div>
@@ -228,9 +226,9 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
             <div class="form-row">
               <div class="form-label">팝업 문구 표출</div>
               <div class="form-ctrl">
-                <input class="form-input" id="f-msg" placeholder="App 업데이트를 실행 하시겠습니까?" maxlength="50">
+                <input class="form-input" id="f-msg" placeholder="더 나은 학습 환경을 위해 앱을 최신 버전으로 업데이트해 주세요." maxlength="50">
                 <div class="form-hint count" id="f-msg-cnt">0/50</div>
-                <div class="form-hint">공백 포함 최대 50자, 미입력시 기본 문구 노출</div>
+                <div class="form-hint">공백 포함 최대 50자 · 미입력 시 기본 문구 노출 · 앱별로 개별 적용됩니다</div>
               </div>
             </div>
             <div class="form-row" style="margin-bottom:0;">
@@ -252,6 +250,7 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
     </div>
   </div>
 
+
   <!-- 확인 모달 (일반형) -->
   <div class="modal-dim" id="modal-confirm">
     <div class="modal">
@@ -270,15 +269,15 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
 <script>
 // ── 데이터 ──────────────────────────────────────────────
 const APPS = [
-  { id:'001', name:'써밋 스코어수학',    pkg:'com.daekyo.score.math',        use:false, vname:'-',     vcode:'-',         mdate:'-',                editor:'-'    },
+  { id:'001', name:'써밋 스코어수학',    pkg:'com.daekyo.score.math',        use:false, vname:'-',     vcode:'-',         mdate:'-',                editor:'-'     },
   { id:'003', name:'써밋 스피드수학',    pkg:'com.daekyo.speed.math',        use:true,  vname:'2.5.0', vcode:'002005000', mdate:'2026-05-10 09:15', editor:'최충호' },
   { id:'005', name:'써밋 스코어국어',    pkg:'com.daekyo.score.korean',      use:true,  vname:'1.8.3', vcode:'001008003', mdate:'2026-05-08 17:40', editor:'손희정' },
   { id:'006', name:'써밋 어휘력',        pkg:'com.daekyo.vocab',             use:true,  vname:'1.4.0', vcode:'001004000', mdate:'2026-05-12 11:05', editor:'손희정' },
-  { id:'009', name:'써밋 스텝국어 1단계', pkg:'com.daekyo.digistep.kr',       use:true,  vname:'1.1.2', vcode:'001001002', mdate:'2026-05-11 10:30', editor:'손희정' },
-  { id:'009', name:'써밋 스텝국어 2단계', pkg:'com.daekyo.digistep.kr',       use:true,  vname:'1.1.2', vcode:'001001002', mdate:'2026-05-11 10:30', editor:'손희정' },
-  { id:'010', name:'써밋 스텝영어 1단계', pkg:'com.daekyo.digistep.en',       use:false, vname:'1.2.1', vcode:'001002001', mdate:'2026-05-09 13:20', editor:'손희정' },
-  { id:'010', name:'써밋 스텝영어 2단계', pkg:'com.daekyo.digistep.en',       use:false, vname:'1.2.1', vcode:'001002001', mdate:'2026-05-09 13:20', editor:'손희정' },
-  { id:'011', name:'써밋 스텝영어 중등', pkg:'com.knowre.android.hexagon.pro', use:true, vname:'2.0.0', vcode:'002000000', mdate:'2026-05-14 07:45', editor:'장수호' },
+  { id:'009', name:'써밋 스텝국어 1단계', pkg:'com.daekyo.digistep.kr',      use:true,  vname:'1.1.2', vcode:'001001002', mdate:'2026-05-11 10:30', editor:'손희정' },
+  { id:'009', name:'써밋 스텝국어 2단계', pkg:'com.daekyo.digistep.kr',      use:true,  vname:'1.0.8', vcode:'001000008', mdate:'2026-04-22 14:10', editor:'손희정' },
+  { id:'010', name:'써밋 스텝영어 1단계', pkg:'com.daekyo.digistep.en',      use:false, vname:'1.2.1', vcode:'001002001', mdate:'2026-05-09 13:20', editor:'손희정' },
+  { id:'010', name:'써밋 스텝영어 2단계', pkg:'com.daekyo.digistep.en',      use:false, vname:'1.1.5', vcode:'001001005', mdate:'2026-04-30 09:05', editor:'손희정' },
+  { id:'011', name:'써밋 스텝영어 중등',  pkg:'com.knowre.android.hexagon.pro', use:true, vname:'2.0.0', vcode:'002000000', mdate:'2026-05-14 07:45', editor:'장수호' },
 ];
 
 let currentApp = null;
@@ -293,8 +292,10 @@ function renderList() {
       <td>${app.id}</td>
       <td><span class="name-link" onclick="openNormalForm('${app.id}')">${app.name}</span></td>
       <td><span class="badge ${app.use?'on':'off'}">${app.use?'사용':'미사용'}</span></td>
-      <td style="color:var(--mute);font-size:12.5px;">${app.editor}</td>
-      <td style="color:var(--mute);font-size:12px;">${app.mdate}</td>
+      <td style="font-size:13px;font-weight:500;">${app.vname !== '-' ? app.vname : '<span style="color:var(--mute2)">-</span>'}</td>
+      <td style="font-size:12px;font-family:monospace;color:var(--mute);">${app.vcode !== '-' ? app.vcode : '<span style="color:var(--mute2)">-</span>'}</td>
+      <td style="color:var(--mute);font-size:12.5px;">${app.editor !== '-' ? app.editor : '<span style="color:var(--mute2)">-</span>'}</td>
+      <td style="color:var(--mute);font-size:12px;">${app.mdate !== '-' ? app.mdate : '<span style="color:var(--mute2)">-</span>'}</td>
     `;
     tb.appendChild(tr);
   });
@@ -332,27 +333,20 @@ function openNormalForm(appId) {
   document.getElementById('f-app').value = `${app.name} (systemId: ${app.id})`;
   const useEl = document.querySelector(`input[name="f-use"][value="${app.use?'on':'off'}"]`);
   if (useEl) useEl.checked = true;
+  toggleVerCard();
 
-  fillFormFields('f', app);
-  applyUseState('f-use', app.use);
-}
+  document.getElementById('f-vname').value = '';
+  document.getElementById('f-vcode').value = '';
+  document.getElementById('f-msg').value   = '';
+  document.getElementById('f-note').value  = '';
+  document.getElementById('f-msg-cnt').textContent  = '0/50';
+  document.getElementById('f-note-cnt').textContent = '0/500';
 
-// ── 폼 필드 공통 초기화 (이전값 힌트 포함) ──────────────
-function fillFormFields(pfx, app) {
-  document.getElementById(`${pfx}-vname`).value = '';
-  document.getElementById(`${pfx}-vcode`).value = '';
-  document.getElementById(`${pfx}-msg`).value   = '';
-  document.getElementById(`${pfx}-note`).value  = '';
-  const msgCnt  = document.getElementById(`${pfx}-msg-cnt`);
-  const noteCnt = document.getElementById(`${pfx}-note-cnt`);
-  if (msgCnt)  msgCnt.textContent  = '0/50';
-  if (noteCnt) noteCnt.textContent = '0/500';
-  setHint(`${pfx}-vname-prev`, app.vname && app.vname !== '-' ? `이전값: ${app.vname}` : '');
-  setHint(`${pfx}-vcode-prev`, app.vcode && app.vcode !== '-' ? `이전값: ${app.vcode}` : '');
-  clearErr(`${pfx}-vname-err`);
-  clearErr(`${pfx}-vcode-err`);
-  document.getElementById(`${pfx}-vname`).classList.remove('err');
-  document.getElementById(`${pfx}-vcode`).classList.remove('err');
+  setHint('f-vname-prev', app.vname !== '-' ? `이전값: ${app.vname}` : '');
+  setHint('f-vcode-prev', app.vcode !== '-' ? `이전값: ${app.vcode}` : '');
+  clearErr('f-vname-err'); clearErr('f-vcode-err');
+  document.getElementById('f-vname').classList.remove('err');
+  document.getElementById('f-vcode').classList.remove('err');
 }
 
 // ── 유효성 검사 ──────────────────────────────────────
@@ -401,7 +395,7 @@ function openConfirm() {
   const note  = document.getElementById('f-note').value.trim();
   let r = '';
   if(use) r += cr('사용여부', use==='on'?'사용':'미사용');
-  r += cr('버전명', vn) + cr('버전코드', vc);
+  r += cr('버전명', vn, currentApp.vname) + cr('버전코드', vc, currentApp.vcode);
   if(msg)  r += cr('팝업 문구 표출', msg);
   if(note) r += cr('배포내용 메모', note);
   document.getElementById('mc-body').innerHTML = r;
@@ -422,25 +416,42 @@ function doSave() {
   showToast('수정사항이 저장되었습니다.');
 }
 
-// ── 유틸 ──────────────────────────────────────────────
-function cr(k,v){ return `<div class="confirm-row"><span class="confirm-key">${k}</span><span class="confirm-val">${v}</span></div>`; }
 
-// ── 사용여부 변경 시 버전정보 카드 비활성화 ──────────────
-function onUseChange(useName) {
-  const checked = document.querySelector(`input[name="${useName}"]:checked`)?.value;
-  applyUseState(useName, checked === 'on');
+// ── 입력 필터 ──────────────────────────────────────────
+function filterVersionName(el) {
+  // 숫자와 점(.)만 허용
+  el.value = el.value.replace(/[^0-9.]/g, '');
 }
-function applyUseState(useName, isOn) {
-  const radio = document.querySelector(`input[name="${useName}"]`);
-  if (!radio) return;
-  const panel = radio.closest('.panel');
-  if (!panel) return;
-  panel.querySelectorAll('.card').forEach(card => {
-    const head = card.querySelector('.card-head');
-    if (head && head.textContent.includes('버전')) {
-      card.classList.toggle('card-disabled', !isOn);
-    }
-  });
+function filterVersionCode(el) {
+  // 숫자만 허용
+  el.value = el.value.replace(/[^0-9]/g, '');
+}
+
+// ── 사용여부에 따라 버전정보 카드 노출/미노출 ──────────────
+function toggleVerCard() {
+  const isOn = document.querySelector('input[name="f-use"]:checked')?.value === 'on';
+  const card = document.getElementById('ver-card');
+  if (card) card.style.display = isOn ? '' : 'none';
+}
+
+// ── 유틸 ──────────────────────────────────────────────
+function cr(k, v, prev) {
+  if (prev && prev !== '-' && prev !== v) {
+    return `<div class="confirm-row">
+      <span class="confirm-key">${k}</span>
+      <span class="confirm-val">
+        <div class="confirm-change">
+          <span class="confirm-prev">${prev}</span>
+          <span class="confirm-arrow">→</span>
+          <span class="confirm-next">${v}</span>
+        </div>
+      </span>
+    </div>`;
+  }
+  return `<div class="confirm-row">
+    <span class="confirm-key">${k}</span>
+    <span class="confirm-val"><span class="confirm-single">${v}</span></span>
+  </div>`;
 }
 function setHint(id,t){ document.getElementById(id).textContent=t; }
 function setErr(id,t)  { document.getElementById(id).textContent=t; }
