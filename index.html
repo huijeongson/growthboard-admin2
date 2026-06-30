@@ -79,6 +79,10 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
 .form-input.err{border-color:var(--red);}
 .form-input[readonly]{background:var(--surface2);color:var(--mute);cursor:default;}
 .narrow{width:300px;}
+.input-wrap{position:relative;}
+.input-wrap .form-input{padding-right:30px;}
+.clear-btn{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:50%;background:var(--mute2);color:#fff;font-size:11px;line-height:16px;text-align:center;cursor:pointer;user-select:none;}
+.clear-btn:hover{background:var(--mute);}
 .form-hint{font-size:11.5px;color:var(--mute2);margin-top:5px;}
 .form-hint.prev{color:var(--amber);}
 .form-hint.error{color:var(--red);}
@@ -194,7 +198,7 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
                   <label><input type="radio" name="f-use" value="on" onchange="toggleVerCard()"> 사용</label>
                   <label><input type="radio" name="f-use" value="off" onchange="toggleVerCard()"> 미사용</label>
                 </div>
-                <div class="use-hint">미사용 시 학습 APP에 업데이트 정책이 전달되지 않습니다</div>
+                <div class="use-hint">※ 미사용 선택 시 해당 학습 APP에는 업데이트 정책이 전달되지 않으며, 버전 정보 입력 항목이 모두 숨김 처리됩니다.</div>
               </div>
             </div>
           </div>
@@ -205,27 +209,42 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
           <div class="card-head">최신 버전정보</div>
           <div class="card-body">
             <div class="form-row">
-              <div class="form-label">버전명</div>
+              <div class="form-label">버전명 <span style="color:var(--red)">*</span></div>
               <div class="form-ctrl">
-                <input class="form-input narrow" id="f-vname" placeholder="1.01.01" autocomplete="off" oninput="filterVersionName(this)">
-                <div class="form-hint">앱 버전 기입 (versionname, 예시:2.01.20)</div>
-                <div class="form-hint prev"  id="f-vname-prev"></div>
+                <input class="form-input narrow" id="f-vname" placeholder="1.01.01" autocomplete="off"
+                       inputmode="decimal"
+                       oninput="filterVersionName(this)"
+                       onkeypress="return /[0-9.]/.test(event.key)"
+                       oncompositionend="filterVersionName(this)" onpaste="setTimeout(()=>filterVersionName(this))">
                 <div class="form-hint error" id="f-vname-err"></div>
+                <div class="form-hint">앱 버전 기입 (versionname, 예시:2.01.20) · 숫자와 점(.)만 입력 가능</div>
+                <div class="form-hint prev"  id="f-vname-prev"></div>
               </div>
             </div>
             <div class="form-row">
-              <div class="form-label">버전코드</div>
+              <div class="form-label">버전코드 <span style="color:var(--red)">*</span></div>
               <div class="form-ctrl">
-                <input class="form-input narrow" id="f-vcode" placeholder="10454120" maxlength="9" autocomplete="off" oninput="filterVersionCode(this)">
-                <div class="form-hint">숫자 9자리 (versionCode)</div>
-                <div class="form-hint prev"  id="f-vcode-prev"></div>
+                <div class="input-wrap">
+                  <input class="form-input narrow" id="f-vcode" placeholder="10454120" maxlength="9" autocomplete="off"
+                         inputmode="numeric"
+                         oninput="filterVersionCode(this)"
+                         onkeypress="return /[0-9]/.test(event.key)"
+                         oncompositionend="filterVersionCode(this)" onpaste="setTimeout(()=>filterVersionCode(this))">
+                  <span class="clear-btn" onclick="clearField('f-vcode')">×</span>
+                </div>
+                <div class="form-hint count" id="f-vcode-cnt">0/9</div>
                 <div class="form-hint error" id="f-vcode-err"></div>
+                <div class="form-hint" id="f-vcode-hint">숫자 9자리 (versionCode) · 숫자만 입력 가능</div>
+                <div class="form-hint prev"  id="f-vcode-prev"></div>
               </div>
             </div>
             <div class="form-row">
               <div class="form-label">팝업 문구 표출</div>
               <div class="form-ctrl">
-                <input class="form-input" id="f-msg" placeholder="더 나은 학습 환경을 위해 앱을 최신 버전으로 업데이트해 주세요." maxlength="50">
+                <div class="input-wrap">
+                  <input class="form-input" id="f-msg" placeholder="더 나은 학습 환경을 위해 앱을 최신 버전으로 업데이트해 주세요." maxlength="50">
+                  <span class="clear-btn" onclick="clearField('f-msg')">×</span>
+                </div>
                 <div class="form-hint count" id="f-msg-cnt">0/50</div>
                 <div class="form-hint">공백 포함 최대 50자 · 미입력 시 기본 문구 노출 · 앱별로 개별 적용됩니다</div>
               </div>
@@ -242,7 +261,7 @@ tbody tr:hover{background:#f8f9fc;cursor:pointer;}
 
         <div class="btn-row">
           <button class="btn btn-ghost" onclick="goList()">취소</button>
-          <button class="btn btn-primary" onclick="openConfirm()">수정</button>
+          <button class="btn btn-primary" onclick="openConfirm()">수정완료</button>
         </div>
       </div>
 
@@ -293,11 +312,12 @@ const APPS = [
 
 let currentApp = null;
 
-// ── 목록 렌더 ──────────────────────────────────────────
+// ── 목록 렌더 (기본 정렬: systemId 기준) ─────────────────
 function renderList() {
   const tb = document.getElementById('list-tbody');
   tb.innerHTML = '';
-  APPS.forEach(app => {
+  const sorted = [...APPS].sort((a,b) => a.id.localeCompare(b.id));
+  sorted.forEach(app => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${app.id}</td>
@@ -335,6 +355,10 @@ function setBC(items) {
 }
 
 // ── 일반형 수정 폼 ──────────────────────────────────────
+// 버전코드 자릿수 차등 적용 대상 (스코어수학, 영어중등 = 7~8자리 / 그 외 = 9자리 고정)
+const SHORT_CODE_IDS = ['001','011'];
+function isShortCodeApp(app){ return SHORT_CODE_IDS.includes(app.id); }
+
 function openNormalForm(appId) {
   const app = APPS.find(a => a.id === appId);
   currentApp = app;
@@ -353,6 +377,18 @@ function openNormalForm(appId) {
   document.getElementById('f-msg-cnt').textContent  = '0/50';
   document.getElementById('f-note-cnt').textContent = '0/500';
 
+  // 버전코드 자릿수 안내/제한값 앱별 차등 적용
+  const vcodeEl = document.getElementById('f-vcode');
+  if (isShortCodeApp(app)) {
+    vcodeEl.maxLength = 8;
+    setHint('f-vcode-hint', '숫자 7~8자리 (versionCode) · 숫자만 입력 가능');
+    setHint('f-vcode-cnt', '0/8');
+  } else {
+    vcodeEl.maxLength = 9;
+    setHint('f-vcode-hint', '숫자 9자리 (versionCode) · 숫자만 입력 가능');
+    setHint('f-vcode-cnt', '0/9');
+  }
+
   setHint('f-vname-prev', app.vname !== '-' ? `이전값: ${app.vname}` : '');
   setHint('f-vcode-prev', app.vcode !== '-' ? `이전값: ${app.vcode}` : '');
   clearErr('f-vname-err'); clearErr('f-vcode-err');
@@ -360,7 +396,7 @@ function openNormalForm(appId) {
   document.getElementById('f-vcode').classList.remove('err');
 }
 
-// ── 유효성 검사 ──────────────────────────────────────
+// ── 유효성 검사 (※ '사용함' 상태로 저장할 때만 수행) ──────────
 function parseVer(v){ return v&&v!=='-'?v.split('.').map(Number):null; }
 function verGT(nv, ov){
   if(!ov||ov==='-') return true;
@@ -374,6 +410,7 @@ function verGT(nv, ov){
 }
 function codeGT(nc, oc){ return (!oc||oc==='-') ? true : parseInt(nc,10)>parseInt(oc,10); }
 
+// '사용함' 으로 저장할 때만 호출됨. '미사용' 저장 시에는 호출하지 않고 검사를 생략한다.
 function validate(pfx, app) {
   const vn = document.getElementById(`${pfx}-vname`).value.trim();
   const vc = document.getElementById(`${pfx}-vcode`).value.trim();
@@ -381,61 +418,118 @@ function validate(pfx, app) {
   document.getElementById(`${pfx}-vname`).classList.remove('err');
   document.getElementById(`${pfx}-vcode`).classList.remove('err');
   let ok = true;
-  if (vc && !/^\d{9}$/.test(vc)) {
-    setErr(`${pfx}-vcode-err`, '버전코드는 숫자 9자리여야 합니다.');
-    document.getElementById(`${pfx}-vcode`).classList.add('err'); ok = false;
-  }
-  if (vc && /^\d{9}$/.test(vc) && app.vcode!=='-' && !codeGT(vc, app.vcode)) {
-    setErr(`${pfx}-vcode-err`, `이전값(${app.vcode})보다 큰 값을 입력해 주세요.`);
-    document.getElementById(`${pfx}-vcode`).classList.add('err'); ok = false;
-  }
-  if (vn && app.vname!=='-' && !verGT(vn, app.vname)) {
+  const codeLen = isShortCodeApp(app) ? '7,8' : '9';
+  const codeRe  = isShortCodeApp(app) ? /^\d{7,8}$/ : /^\d{9}$/;
+
+  // 버전명: 필수 입력
+  if (!vn) {
+    setErr(`${pfx}-vname-err`, '버전명은 필수 입력 항목입니다.');
+    document.getElementById(`${pfx}-vname`).classList.add('err'); ok = false;
+  } else if (app.vname!=='-' && !verGT(vn, app.vname)) {
     setErr(`${pfx}-vname-err`, `이전값(${app.vname})보다 높은 버전을 입력해 주세요.`);
     document.getElementById(`${pfx}-vname`).classList.add('err'); ok = false;
+  }
+
+  // 버전코드: 필수 입력, 자릿수는 앱별 차등
+  if (!vc) {
+    setErr(`${pfx}-vcode-err`, '버전코드는 필수 입력 항목입니다.');
+    document.getElementById(`${pfx}-vcode`).classList.add('err'); ok = false;
+  } else if (!codeRe.test(vc)) {
+    setErr(`${pfx}-vcode-err`, `버전코드는 숫자 ${codeLen}자리여야 합니다.`);
+    document.getElementById(`${pfx}-vcode`).classList.add('err'); ok = false;
+  } else if (app.vcode!=='-' && !codeGT(vc, app.vcode)) {
+    setErr(`${pfx}-vcode-err`, `이전 버전코드(${app.vcode})보다 큰 값을 입력해야 합니다.`);
+    document.getElementById(`${pfx}-vcode`).classList.add('err'); ok = false;
   }
   return ok;
 }
 
 // ── 확인 모달 (일반형) ──────────────────────────────────
 function openConfirm() {
-  if (!validate('f', currentApp)) return;
-  const use   = document.querySelector('input[name="f-use"]:checked')?.value;
-  const vn    = document.getElementById('f-vname').value.trim() || '-';
-  const vc    = document.getElementById('f-vcode').value.trim() || '-';
-  const msg   = document.getElementById('f-msg').value.trim();
-  const note  = document.getElementById('f-note').value.trim();
+  const use  = document.querySelector('input[name="f-use"]:checked')?.value;
+  const app  = currentApp;
+
+  // A. '미사용'으로 저장하는 경우: 다른 항목 변경 여부와 무관하게 검사 생략, 단일 정보만 안내
+  if (use === 'off') {
+    document.getElementById('mc-body').innerHTML = cr('사용여부', '미사용');
+    document.getElementById('modal-confirm').classList.add('on');
+    return;
+  }
+
+  // B. '사용함' 으로 저장하는 경우: 입력값 유효성 검사 수행
+  if (!validate('f', app)) return;
+
+  const vn   = document.getElementById('f-vname').value.trim();
+  const vc   = document.getElementById('f-vcode').value.trim();
+  const msg  = document.getElementById('f-msg').value.trim();
+  const note = document.getElementById('f-note').value.trim();
+
+  const useChanged = !app.use; // 기존 미사용 → 사용함으로 바뀐 경우만 변경
+  const noChange = !useChanged && !vn && !vc && !msg && !note;
+
+  // 예외 케이스: 변경된 내용이 없는 경우 — 버튼은 비활성화하지 않고, 클릭 시 확인 문구만 노출
+  if (noChange) {
+    document.getElementById('mc-body').innerHTML =
+      `<div class="confirm-row"><span class="confirm-single">수정된 내용이 없습니다. 그래도 저장하시겠습니까?</span></div>`;
+    document.getElementById('modal-confirm').classList.add('on');
+    return;
+  }
+
   let r = '';
-  if(use) r += cr('사용여부', use==='on'?'사용':'미사용');
-  r += cr('버전명', vn, currentApp.vname) + cr('버전코드', vc, currentApp.vcode);
-  if(msg)  r += cr('팝업 문구 표출', msg);
-  if(note) r += cr('배포내용 메모', note);
+  if (useChanged) r += cr('사용여부', '사용');
+  if (vn)  r += cr('버전명', vn, app.vname, true);
+  if (vc)  r += cr('버전코드', vc, app.vcode, true);
+  if (msg)  r += cr('팝업 문구 표출', msg);
+  if (note) r += cr('배포내용 메모', note);
   document.getElementById('mc-body').innerHTML = r;
   document.getElementById('modal-confirm').classList.add('on');
 }
 
 function doSave() {
   const use  = document.querySelector('input[name="f-use"]:checked')?.value;
-  const vn   = document.getElementById('f-vname').value.trim();
-  const vc   = document.getElementById('f-vcode').value.trim();
   const app  = currentApp;
-  if(use) app.use = use==='on';
-  if(vn)  app.vname = vn;
-  if(vc)  app.vcode = vc;
-  app.mdate  = new Date().toISOString().slice(0,16).replace('T',' ');
-  app.editor = '손희정';
+
+  // 사용여부는 다른 조건과 무관하게 항상 최신 상태로 갱신
+  app.use = use === 'on';
+
+  // 실제 버전(버전명/버전코드/팝업문구/배포내용) 갱신은 '사용함' 으로 저장할 때만 수행
+  if (use === 'on') {
+    const vn   = document.getElementById('f-vname').value.trim();
+    const vc   = document.getElementById('f-vcode').value.trim();
+    const msg  = document.getElementById('f-msg').value.trim();
+    const note = document.getElementById('f-note').value.trim();
+    if (vn)  app.vname = vn;   // 기존 최신 버전 → 구버전 전환 후 신규 최신 버전으로 등록
+    if (vc)  app.vcode = vc;
+    if (msg) app.msg   = msg;
+    if (note) app.note = note;
+    app.mdate  = new Date().toISOString().slice(0,16).replace('T',' ');
+    app.editor = '손희정';
+  }
+
   closeModal('modal-confirm'); renderList(); goList();
-  showAlert('수정사항이 저장되었습니다.');
+  showAlert('수정이 완료되었습니다.');
 }
 
 
 // ── 입력 필터 ──────────────────────────────────────────
 function filterVersionName(el) {
-  // 숫자와 점(.)만 허용
-  el.value = el.value.replace(/[^0-9.]/g, '');
+  // 숫자와 점(.) 외 전부 차단 (한글 IME 조합 완료 시점에도 재검증)
+  const filtered = el.value.replace(/[^0-9.]/g, '');
+  if (filtered !== el.value) el.value = filtered;
 }
 function filterVersionCode(el) {
-  // 숫자만 허용
-  el.value = el.value.replace(/[^0-9]/g, '');
+  // 숫자 외 전부 차단
+  const filtered = el.value.replace(/[^0-9]/g, '');
+  if (filtered !== el.value) el.value = filtered;
+  const max = el.maxLength > 0 ? el.maxLength : 9;
+  const cnt = document.getElementById('f-vcode-cnt');
+  if (cnt) cnt.textContent = `${el.value.length}/${max}`;
+}
+function clearField(id) {
+  const el = document.getElementById(id);
+  el.value = '';
+  el.dispatchEvent(new Event('input'));
+  el.focus();
 }
 
 // ── 사용여부에 따라 버전정보 카드 노출/미노출 ──────────────
@@ -446,13 +540,14 @@ function toggleVerCard() {
 }
 
 // ── 유틸 ──────────────────────────────────────────────
-function cr(k, v, prev) {
-  if (prev && prev !== '-' && prev !== v) {
+function cr(k, v, prev, forceArrow) {
+  if (forceArrow || (prev && prev !== '-' && prev !== v)) {
+    const prevDisp = (prev && prev !== '-') ? prev : '----';
     return `<div class="confirm-row">
       <span class="confirm-key">${k}</span>
       <span class="confirm-val">
         <div class="confirm-change">
-          <span class="confirm-prev">${prev}</span>
+          <span class="confirm-prev">${prevDisp}</span>
           <span class="confirm-arrow">→</span>
           <span class="confirm-next">${v}</span>
         </div>
